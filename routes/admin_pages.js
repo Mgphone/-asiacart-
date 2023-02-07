@@ -1,5 +1,6 @@
 const express=require("express");
 const mongoose=require("mongoose");
+const { findByIdAndRemove } = require("../models/page");
 // const path=require("path");
 const router=express.Router();
 //Get Page Model
@@ -174,6 +175,17 @@ router.post('/edit-page/:id', function (req, res) {
 
 });
 
+
+//get delete page
+
+router.get('/delete-page/:id',(req,res)=>{
+  console.log(req.params.id);
+  Page.findByIdAndRemove(req.params.id,(err)=>{
+    if(err) console.log(err);
+    req.flash('success','Paged Deleted');
+    res.redirect('/admin/pages');
+  });
+});
 
 
 module.exports=router;
