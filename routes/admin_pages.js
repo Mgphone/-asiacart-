@@ -87,7 +87,7 @@ router.post("/add-page",(req,res)=>{
 router.get('/edit-page/:slug',(req,res)=>{
   
   
-  Page.findById(req.params.slug,function(err,page){
+  Page.findOne({slug:req.params.slug},function(err,page){
   
     if(err)
     return console.log(err);
@@ -99,6 +99,57 @@ router.get('/edit-page/:slug',(req,res)=>{
     });
   });
 });
+
+// // get Post Pages
+// router.post("/edit-page/:id",(req,res)=>{
+//   req.checkBody('title','Title Must have a value').notEmpty();
+//   req.checkBody('content','Content Must have a value').notEmpty();
+
+//   var title=req.body.title;
+//   var slug=req.body.slug.replace(/\s+/g,'-').toLowerCase();
+//   if(slug=="")slug=title.replace(/\s+/g,'-').toLowerCase();
+//   var content=req.body.content;
+//   var id=req.body.id;
+//   var errors=req.validationErrors();
+//   if(errors){
+//     console.log("error");
+//     res.render('admin/add_page',{
+//       errors:errors,
+//       title:title,
+//       slug:slug,
+//       content:content
+//     });
+//   }else{
+//       Page.findOne({slug:req.params.slug,_id:{'$ne':id}},(err,page)=>{
+    
+//         console.log(page);
+//         if(page){
+//           req.flash('danger','Page Exit Choose other');
+//           res.render('admin/add_page',{
+//             title:title,
+//             slug:slug,
+//             content:content
+//           });
+//         }else{
+//           Page.findById(id,function(err,page){
+//             if(err) return console.log(err);
+//             page.title=title;
+//             page.slug=slug;
+//             page.content=content;
+//             page.save(function(err){
+//               if(err)
+//               return console.log(err);
+//               req.flash('success','Page added');
+//               res.redirect('/admin/pages');
+//             });
+//           });
+       
+          
+//         }
+//       })
+//     }
+  
+// });
 
 module.exports=router;
 
