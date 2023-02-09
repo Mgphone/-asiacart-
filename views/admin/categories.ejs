@@ -1,0 +1,34 @@
+<%-include("../_layouts/adminheader.ejs") %>
+
+<h2 class="page-title"> Categories</h2>
+<a href="/admin/categories/add-category" class="btn btn-primary">Add a Categories</a>
+<br><br>
+<table class="table table-striped sorting">
+  <thead>
+    <tr >
+      <th>Category</th>
+      <th>Edit</th>
+      <th>Delete</th>
+    </tr>
+  </thead>
+    <tbody>
+   <% categories.forEach((category) => { %>
+    <tr>
+      <td><%= category.title %> </td>
+      <td><a href="/admin/categories/edit-category/<%= category.id %> ">Edit</a></td>
+      <td ><a class="confirmedDeletion" href="/admin/categories/delete-category/<%= category._id %> ">Delete</a></form></td>
+     
+    </tr>  
+   
+   <% }) %>
+    </tbody>
+  </table>
+  
+  <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
+    <script>
+      $('tbody').sortable()
+    </script>
+  
+  
+  
+  <%-include("../_layouts/adminfooter.ejs") %>
