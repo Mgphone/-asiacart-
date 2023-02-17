@@ -5,7 +5,7 @@ const { findByIdAndRemove } = require("../models/page");
 const router=express.Router();
 //Get Page Model
 var Category=require("../models/category");
-const category = require("../models/category");
+// const category = require("../models/category");
 
 
 // Get Category index
@@ -90,7 +90,7 @@ router.post("/add-category",(req,res)=>{
 router.get('/edit-category/:id',(req,res)=>{
   
   
-  category.findById(req.params.id,function(err,category){
+  Category.findById(req.params.id,function(err,category){
   
     if(err)
     return console.log(err);

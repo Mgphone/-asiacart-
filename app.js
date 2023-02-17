@@ -6,7 +6,8 @@ const bodyParser=require("body-parser");
 dotenv.config();
 const session=require("express-session");
 const expressValidator=require("express-validator");
-
+const fileUpload=require('express-fileupload');
+const { check, validationResult } = require('express-validator');
 
 
 
@@ -26,11 +27,14 @@ app.set("view engine", "ejs");
 app.use(express.static("public"));
 //set Global errors variable
 app.locals.errors=null;
+//Express fileUpload middleware
+// app.use(fileUpload());
+
 
 //Body Parser middle wear
 
 //Body Parser Application url encoded
-app.use(bodyParser.urlencoded({extended:true}));
+app.use(bodyParser.urlencoded({extended:false}));
 
 
 // parse application/json
@@ -60,6 +64,41 @@ app.use(expressValidator({
       msg   : msg,
       value : value
     };
+  },
+  customValidators: {
+    isImage: function (value, filename) {
+        var extension = (path.extname(filename)).toLowerCase();
+        switch (extension) {
+            case '.jpg':
+                return '.jpg';
+            case '.jpeg':
+                return '.jpeg';
+            case '.png':
+                return '.png';
+            case '':
+                return '.jpg';
+            default:
+                return false;
+        }
+    }
+} 
+}));
+
+// Express Validator middleware
+app.use(expressValidator({
+  errorFormatter: function (param, msg, value) {
+      var namespace = param.split('.')
+              , root = namespace.shift()
+              , formParam = root;
+
+      while (namespace.length) {
+          formParam += '[' + namespace.shift() + ']';
+      }
+      return {
+          param: formParam,
+          msg: msg,
+          value: value
+      };
   }
 }));
 
@@ -70,15 +109,17 @@ app.use(function (req, res, next) {
   next();
 });
 
-
+//set route
 const pages=require('./routes/pages');
 const adminPages=require('./routes/admin_pages');
 const adminCategories=require('./routes/admin_categories')
+const adminProducts=require('./routes/admin_products')
 
 
 app.use('/admin/pages',adminPages);
 app.use('/admin/categories',adminCategories);
 app.use('/',pages); 
+app.use('/admin/products',adminProducts);
 
 
 //start the server
