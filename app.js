@@ -1,36 +1,44 @@
 const express=require("express");
-const path =require("path");
+// const path =require("path");
 const dotenv=require("dotenv");
-const mongoose=require("mongoose");
+
 const bodyParser=require("body-parser");
 dotenv.config();
 const session=require("express-session");
 const expressValidator=require("express-validator");
-const fileUpload=require('express-fileupload');
+
 const { check, validationResult } = require('express-validator');
 
 
 
 //Connect to Database
-mongoose.set('strictQuery',false);
-mongoose
-.connect(process.env.MONGO_URL)
-.then(()=>console.log("Successful Connect DB"))
-.catch((err)=>console.log(err));
+require("./db/mongoose");
 //Init app
 const app=express();
 
-//View Engine setup
-// app.set("views",path.join(__dirname,"views"));
+
 app.set("view engine", "ejs");
 //set up public folder
 app.use(express.static("public"));
 //set Global errors variable
 app.locals.errors=null;
-//Express fileUpload middleware
-// app.use(fileUpload());
 
+//Get all pages to pass header.ejs
+//get page models
+let Page=require("./models/page");
+Page.find((err,pages)=>{
+  if (!err) {
+    return app.locals.pages=pages;
+  }
+})
 
+//get category to header.ejs
+let Category=require("./models/category");
+Category.find((err,categories)=>{
+  if(!err){
+    return app.locals.categories=categories;
+  }
+})
 //Body Parser middle wear
 
 //Body Parser Application url encoded
@@ -64,43 +72,43 @@ app.use(expressValidator({
       msg   : msg,
       value : value
     };
-  },
-  customValidators: {
-    isImage: function (value, filename) {
-        var extension = (path.extname(filename)).toLowerCase();
-        switch (extension) {
-            case '.jpg':
-                return '.jpg';
-            case '.jpeg':
-                return '.jpeg';
-            case '.png':
-                return '.png';
-            case '':
-                return '.jpg';
-            default:
-                return false;
-        }
-    }
-} 
+  }
+//   ,customValidators: {
+//     isImage: function (value, filename) {
+//         var extension = (path.extname(filename)).toLowerCase();
+//         switch (extension) {
+//             case '.jpg':
+//                 return '.jpg';
+//             case '.jpeg':
+//                 return '.jpeg';
+//             case '.png':
+//                 return '.png';
+//             case '':
+//                 return '.jpg';
+//             default:
+//                 return false;
+//         }
+//     }
+// } 
 }));
 
 // Express Validator middleware
-app.use(expressValidator({
-  errorFormatter: function (param, msg, value) {
-      var namespace = param.split('.')
-              , root = namespace.shift()
-              , formParam = root;
+// app.use(expressValidator({
+//   errorFormatter: function (param, msg, value) {
+//       var namespace = param.split('.')
+//               , root = namespace.shift()
+//               , formParam = root;
 
-      while (namespace.length) {
-          formParam += '[' + namespace.shift() + ']';
-      }
-      return {
-          param: formParam,
-          msg: msg,
-          value: value
-      };
-  }
-}));
+//       while (namespace.length) {
+//           formParam += '[' + namespace.shift() + ']';
+//       }
+//       return {
+//           param: formParam,
+//           msg: msg,
+//           value: value
+//       };
+//   }
+// }));
 
 //Express Messages Middlewear
 app.use(require('connect-flash')());
@@ -110,15 +118,16 @@ app.use(function (req, res, next) {
 });
 
 //set route
+const products=require('./routes/products');
 const pages=require('./routes/pages');
 const adminPages=require('./routes/admin_pages');
 const adminCategories=require('./routes/admin_categories')
 const adminProducts=require('./routes/admin_products')
 
-
+app.use('/products',products);
+app.use('/',pages); 
 app.use('/admin/pages',adminPages);
 app.use('/admin/categories',adminCategories);
-app.use('/',pages); 
 app.use('/admin/products',adminProducts);
 
 
