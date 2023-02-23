@@ -1,14 +1,15 @@
 <%-include("../views/_layouts/header.ejs") %>
+<% products.forEach(function(c){ %>
 
 <div class="row products">
-    <% products.forEach(function(c){ %>
+  
         <div class="col-xs-12 col-md-4 p">
             <a  href="<%= c.imageUrl %>" target="_blank">
                 <img  src="<%=c.imageUrl  %>" width="200" height="200" alt="">
             </a>
             <h3><%= c.title %></h3>
-            <h4>$<%= parseFloat(c.price).toFixed(2) %></h4>
-            <a  href="">Add to Cart</a>
+            <h4>£<%= parseFloat(c.price).toFixed(2) %></h4>
+            <a  href="/cart/add/<%= c.slug %>">Add to Cart</a>
         </div>
     <% }); %>
 

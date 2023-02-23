@@ -24,8 +24,7 @@ router.get("/:category",(req,res)=>{
   Category.findOne({slug:category},function(err,c){
     Product.find({category:category},function(err,products){
       if(err){console.log(err);}
-      console.log(c);
-      console.log(products);
+      
       res.render("cat_products",{
         title:c.title,
         products:products

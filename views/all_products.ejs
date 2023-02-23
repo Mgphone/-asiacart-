@@ -1,5 +1,5 @@
 <%-include("../views/_layouts/header.ejs") %>
-
+<h1>All Products</h1>
 <div class="row products">
     
   <% products.forEach(function(p){ %>
@@ -8,8 +8,8 @@
                   <img  src="<%=p.imageUrl  %>" width="200" height="200" alt="">
               </a>
               <h3><%= p.title %></h3>
-              <h4>$<%= parseFloat(p.price).toFixed(2) %></h4>
-              <a  href="">Add to Cart</a>
+              <h4>£<%= parseFloat(p.price).toFixed(2) %></h4>
+              <a  href="/cart/add/<%= p.slug %>">Add to Cart</a>
           </div>
       <% }); %>
 

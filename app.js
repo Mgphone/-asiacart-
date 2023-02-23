@@ -53,7 +53,7 @@ app.use(session({
   secret: 'keyboard cat',
   resave: false,
   saveUninitialized: true,
-  cookie: { secure: true }
+  // cookie: { secure: true }
 }))
 
 //Need to set up for express validator
@@ -117,13 +117,23 @@ app.use(function (req, res, next) {
   next();
 });
 
+
+//session cart
+app.get('*',(req,res,next)=>{
+  res.locals.cart=req.session.cart;
+  next();
+});
+
+
 //set route
 const products=require('./routes/products');
 const pages=require('./routes/pages');
+const cart=require('./routes/cart');
 const adminPages=require('./routes/admin_pages');
 const adminCategories=require('./routes/admin_categories')
 const adminProducts=require('./routes/admin_products')
 
+app.use('/cart',cart);
 app.use('/products',products);
 app.use('/',pages); 
 app.use('/admin/pages',adminPages);
