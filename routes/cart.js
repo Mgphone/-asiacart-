@@ -52,10 +52,15 @@ router.get("/add/:product",function(req,res){
 });
 
 router.get("/checkout",(req,res)=>{
+  if (req.session.cart && req.session.cart.length==0){
+        delete  req.session.cart;
+        res.redirect('/cart/checkout')
+  }else{
   res.render("checkout",{
     title:"Checkout",
     cart:req.session.cart
   });
+}
 })
 
 router.get("/update/:product",(req,res)=>{

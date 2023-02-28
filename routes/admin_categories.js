@@ -1,16 +1,18 @@
 const express=require("express");
 const mongoose=require("mongoose");
+const {check,validationResult}=require("express-validator");
 const { findByIdAndRemove } = require("../models/page");
 // const path=require("path");
 const router=express.Router();
 //Get Page Model
 var Category=require("../models/category");
 // const category = require("../models/category");
-
+const auth=require('../config/auth');
+const isAdmin=auth.isAdmin;
 
 // Get Category index
 
-router.get('/',function(req,res){
+router.get('/',isAdmin,function(req,res){
   
  Category.find(function(err,categories){
   if(!err){
@@ -22,8 +24,8 @@ router.get('/',function(req,res){
 });;
 
 
-//get ad-category
-router.get('/add-category',function(req,res){
+//get add-category
+router.get('/add-category',isAdmin,function(req,res){
   var title="";
   var slug="";
 
@@ -37,19 +39,21 @@ router.get('/add-category',function(req,res){
 /*
 * POST add-category
 */
-router.post("/add-category",(req,res)=>{
-  req.checkBody('title','Title Must have a value').notEmpty();
+router.post("/add-category",[check('title','Title Must have a value').notEmpty()],(req,res)=>{
+  
   
 
   var title=req.body.title;
   var slug=req.body.slug.replace(/\s+/g,'-').toLowerCase();
   if(slug=="")slug=title.replace(/\s+/g,'-').toLowerCase();
   
-  var errors=req.validationErrors();
-  if(errors){
-    console.log("error");
+  // var errors=req.validationErrors();
+  var errors=validationResult(req)
+
+  if(!errors.isEmpty()){
+   
     res.render('admin/add_category',{
-      errors:errors,
+      errors:errors.errors,
       title:title,
       slug:slug,
     
@@ -87,7 +91,7 @@ router.post("/add-category",(req,res)=>{
 
 
 //get Edit category
-router.get('/edit-category/:id',(req,res)=>{
+router.get('/edit-category/:id',isAdmin,(req,res)=>{
   
   
   Category.findById(req.params.id,function(err,category){
@@ -108,9 +112,11 @@ router.get('/edit-category/:id',(req,res)=>{
 /*
  * POST edit Category
  */
-router.post('/edit-category/:id', function (req, res) {
+router.post('/edit-category/:id',[
+  check('title', 'Title must have a value.').notEmpty()],
+  function (req, res) {
 
-  req.checkBody('title', 'Title must have a value.').notEmpty();
+  // req.checkBody('title', 'Title must have a value.').notEmpty();
   
 
   var title = req.body.title;
@@ -119,17 +125,16 @@ router.post('/edit-category/:id', function (req, res) {
       slug = title.replace(/\s+/g, '-').toLowerCase();
   var id = req.params.id;
   
-  var errors = req.validationErrors();
+  var errors = validationResult(req);
 
-  if (errors) {
-  
-      res.render('admin/edit_category', {
-          errors: errors,
-          title: title,
-          slug: slug,       
-          id: id
+  if (!errors.isEmpty()) {
+        return  res.render('admin/edit_category', {
+              errors: errors.errors,
+              title: title,
+              slug: slug,       
+              id: id
       });
-  } else {
+  } 
       Category.findOne({slug: slug, _id: {'$ne': id}}, function (err, category) {
           if (category) {
               req.flash('danger', 'Page slug exists, choose another.');
@@ -171,14 +176,14 @@ router.post('/edit-category/:id', function (req, res) {
 
           }
       });
-  }
+  
 
 });
 
 
 //get delete page
 
-router.get('/delete-category/:id',(req,res)=>{
+router.get('/delete-category/:id',isAdmin,(req,res)=>{
   
   Category.findByIdAndRemove(req.params.id,(err)=>{
     if(err) console.log(err);

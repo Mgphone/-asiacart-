@@ -1,17 +1,20 @@
 const express=require("express");
+
 const mongoose=require("mongoose");
 const { findByIdAndRemove } = require("../models/page");
+const {check,validationResult}=require('express-validator');
+
 // const path=require("path");
 const router=express.Router();
 //Get Page Model
 const Page=require("../models/page");
-
-
+auth=require("../config/auth");
+const isAdmin=auth.isAdmin;
 
 
 // Get pages index
 
-router.get('/',function(req,res){
+router.get('/',isAdmin,function(req,res){
   
  Page.find({},function(err,pages){
   if(!err){
@@ -25,7 +28,7 @@ router.get('/',function(req,res){
 
 
 
-router.get('/add-page',function(req,res){
+router.get('/add-page',isAdmin,function(req,res){
   var title="";
   var slug="";
   var content="";
@@ -39,19 +42,23 @@ router.get('/add-page',function(req,res){
 /*
 * POST add Page
 */
-router.post("/add-page",(req,res)=>{
-  req.checkBody('title','Title Must have a value').notEmpty();
-  req.checkBody('content','Content Must have a value').notEmpty();
+router.post("/add-page",[
+  check('title','Title Must have a value').notEmpty(),
+  check('content','Content Must have a value').notEmpty()
+],(req,res)=>{
+  // req.checkBody('title','Title Must have a value').notEmpty();
+  // req.checkBody('content','Content Must have a value').notEmpty();
 
   var title=req.body.title;
   var slug=req.body.slug.replace(/\s+/g,'-').toLowerCase();
   if(slug=="")slug=title.replace(/\s+/g,'-').toLowerCase();
   var content=req.body.content;
-  var errors=req.validationErrors();
-  if(errors){
+
+  var errors=validationResult(req)
+  if(!errors.isEmpty()){
     console.log("error");
     res.render('admin/add_page',{
-      errors:errors,
+      errors:errors.errors,
       title:title,
       slug:slug,
       content:content
@@ -88,7 +95,7 @@ router.post("/add-page",(req,res)=>{
 
 
 //get Edit pages
-router.get('/edit-page/:id',(req,res)=>{
+router.get('/edit-page/:id',isAdmin,(req,res)=>{
   
   
   Page.findById(req.params.id,function(err,page){
@@ -110,10 +117,13 @@ router.get('/edit-page/:id',(req,res)=>{
 /*
  * POST edit page
  */
-router.post('/edit-page/:id', function (req, res) {
+router.post('/edit-page/:id',[
+  check('title', 'Title must have a value.').notEmpty(),
+  check('content', 'Content must have a value.').notEmpty()
+], function (req, res) {
 
-  req.checkBody('title', 'Title must have a value.').notEmpty();
-  req.checkBody('content', 'Content must have a value.').notEmpty();
+  // req.checkBody('title', 'Title must have a value.').notEmpty();
+  // req.checkBody('content', 'Content must have a value.').notEmpty();
 
   var title = req.body.title;
   var slug = req.body.slug.replace(/\s+/g, '-').toLowerCase();
@@ -122,11 +132,11 @@ router.post('/edit-page/:id', function (req, res) {
   var content = req.body.content;
   var id = req.params.id;
 
-  var errors = req.validationErrors();
+  var errors = validationResult(req);
 
-  if (errors) {
+  if (!errors.isEmpty()) {
       res.render('admin/edit_page', {
-          errors: errors,
+          errors: errors.errors,
           title: title,
           slug: slug,
           content: content,
@@ -181,7 +191,7 @@ router.post('/edit-page/:id', function (req, res) {
 
 //get delete page
 
-router.get('/delete-page/:id',(req,res)=>{
+router.get('/delete-page/:id',isAdmin,(req,res)=>{
   console.log(req.params.id);
   Page.findByIdAndRemove(req.params.id,(err)=>{
     if(err) console.log(err);

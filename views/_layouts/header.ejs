@@ -8,7 +8,7 @@
         <title><%= title %></title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.1.20/jquery.fancybox.min.css" />
-        <!-- <link rel="stylesheet" href="/css/styles.css" /> -->
+        <link rel="stylesheet" href="/css/style.css" />
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     </head>
 
@@ -46,6 +46,16 @@
                                     <% } %>
                             )</a>
                         </li>
+                        <% if (user) { %>
+                        <li><a href="/users/logout">Hi, <%= user.email %> (logout)</a></li>
+                        <% }else{ %>
+                            <li><a href="/users/login">Login</a></li>
+                        <li><a href="/users/register">Register</a></li>
+                        <% } %>
+                        <% if (user&& user.admin==1) { %>
+                            <li><a href="/admin/pages">Admin Area</li>                         
+                        <% } %>
+                        
                     </ul>
                 </div><!--/.nav-collapse -->
             </div>
@@ -53,7 +63,13 @@
 
         <div class="container">
             <%- messages('messages', locals) %>
-           
+            <% if (errors) {     %>
+                <% errors.forEach(function (error) {%>
+                <div class="alert alert-danger">
+                  <%=error.msg %>
+                </div>
+                <%}) %>
+              <% }%>
             <div class="row"> 
                 <div class="col-xs-12 col-md-3">
                     <h3>Categories</h3>

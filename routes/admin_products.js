@@ -3,7 +3,8 @@ const mongoose=require("mongoose");
 const router=express.Router();
 const { check, validationResult } = require('express-validator');
 const path=require("path");
-
+auth=require("../config/auth");
+const isAdmin=auth.isAdmin;
 
 // const mkdirp=require("mkdirp");
 const fs=require("fs-extra");
@@ -24,7 +25,7 @@ const { log } = require("console");
 
 // Get Product index
 
-router.get('/',function(req,res){
+router.get('/',isAdmin,function(req,res){
     Product.find((err,products)=>{
         
             res.render('admin/products',{
@@ -37,7 +38,7 @@ router.get('/',function(req,res){
 
 
 //get add products
-router.get('/add-product',function(req,res){
+router.get('/add-product',isAdmin,function(req,res){
   var title="";
  
   var price="";
@@ -45,7 +46,6 @@ router.get('/add-product',function(req,res){
   Category.find((err,categories)=>{
   res.render('admin/add_product',{
     title:title,
-    
     categories:categories,
     price:price,
     imageUrl:imageUrl
@@ -56,23 +56,16 @@ router.get('/add-product',function(req,res){
 
 
 //post add product
-router.post('/add-product', upload.single('image'), async(req, res)=> {
+router.post('/add-product',upload.single('image'), async(req, res)=> {
 
-        const imageResult= await cloudinary.uploader.upload(req.file.path,{folder:'cmscart'});
-          
-   
-    
-
-  
+    const imageResult= await cloudinary.uploader.upload(req.file.path,{folder:'cmscart'});        
     var title = req.body.title;
     var slug = title.replace(/\s+/g, '-').toLowerCase();
-   
     var price = req.body.price;
     var category = req.body.category;
     var imageFile=imageResult.url;
     var publicId=imageResult.public_id
-    console.log(imageFile);
-    console.log(publicId);
+   
 
               var product = new Product({
                   title: title,
@@ -106,7 +99,7 @@ router.post('/add-product', upload.single('image'), async(req, res)=> {
 
 
 //get Edit products
-router.get('/edit-product/:id',(req,res)=>{
+router.get('/edit-product/:id',isAdmin,(req,res)=>{
   
   
   Category.find((err,categories)=>{
@@ -137,21 +130,13 @@ router.get('/edit-product/:id',(req,res)=>{
 /*
  * POST edit Product
  */
-router.post('/edit-product/:id',upload.single("image"),async(req,res)=>{
+router.post('/edit-product/:id',[],upload.single("image"),async(req,res)=>{
   try {
-    let product=await Product.findById(req.params.id);
-    
-    //delete image from cloudinary
-    
+    let product=await Product.findById(req.params.id);   
+    //delete image from cloudinary    
     await cloudinary.uploader.destroy(product.publicId).then((err)=>console.log(err));
-    //upload image to cloudinary
-    
-   
-   
-      let imageResult= await cloudinary.uploader.upload(req.file.path,{folder:'cmscart'});
-   
-    
-   
+    //upload image to cloudinary  
+    let imageResult= await cloudinary.uploader.upload(req.file.path,{folder:'cmscart'});   
     let data={
       title:req.body.title||product.name,
       slug:req.body.title||product.slug, 
@@ -161,21 +146,19 @@ router.post('/edit-product/:id',upload.single("image"),async(req,res)=>{
       publicId:imageResult.publicId||product.publicId
     };
     console.log(data);
-
     product=await Product.findByIdAndUpdate(req.params.id,data,{new:true},(err)=>{
       if(err) console.log(err);
     }).clone();
   } catch (error) {
     console.log(error);
   }
-
   res.redirect('/admin/products');
 })
 
 
 //get delete Product
 
-router.get('/delete-product/:id',async(req,res)=>{
+router.get('/delete-product/:id',isAdmin,async(req,res)=>{
   try {
     let product=await Product.findById(req.params.id);
     await cloudinary.uploader.destroy(product.publicId);

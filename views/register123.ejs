@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+  <link rel="stylesheet" href="/css/login.css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <title><%= title %></title>
+</head>
+<body>
+ 
+  <div class="wrapper fadeInDown">
+    <div id="formContent">
+      <!-- Tabs Titles -->
+  
+      <!-- Icon -->
+     
+     <h1><%= title %></h1>
+     <div>
+    
+      <%- messages('messages', locals) %>
+      <% if (errors) {     %>
+       <% errors.forEach(function (error) {%>
+       <div class="alert alert-danger">
+         <%=error.msg %>
+       </div>
+       <%}) %>
+     <% }%>
+    </div>
+     <br><br>
+  
+      <!-- Login Form -->
+      <form method="post" action="/users/register" autocomplete="off">
+        
+        <input type="text" id="email" class="fadeIn second" name="email"  placeholder="Email"> 
+        <!-- pattern="^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$" -->
+       
+        <input type="password" id="password" class="fadeIn third" name="password" placeholder="password">
+        <input type="password" id="password2" class="fadeIn third" name="password2" placeholder="Confirm password">
+        <br>
+        <span id="message"></span>
+        <input type="submit" class="fadeIn fourth" value="Register">
+        
+      </form>
+  
+
+  
+    </div>
+  </div>
+</body>
+<script>
+  $('#password, #password2').on('keyup', function () {
+    if ($('#password').val() == $('#password2').val()) {
+        $('#message').html('Matching').css('color', 'green');
+    } else 
+        $('#message').html('Not Matching').css('color', 'red');
+});
+</script>
+</html>
