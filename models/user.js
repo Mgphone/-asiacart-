@@ -5,7 +5,8 @@ const UserSchema=mongoose.Schema({
 
   email:{
     type:String,
-    required:true
+    required:true,
+    unique:true
   },
   password:{
     type:String,
@@ -15,8 +16,10 @@ const UserSchema=mongoose.Schema({
   admin:{
     type:Number,
    
-  }
-  
-});
+  }  
+},{
+  timestamps:true
+}
+);
 
 const User=module.exports=mongoose.model('User',UserSchema);

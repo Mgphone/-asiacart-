@@ -50,7 +50,7 @@
                         <li><a href="/users/logout">Hi, <%= user.email %> (logout)</a></li>
                         <% }else{ %>
                             <li><a href="/users/login">Login</a></li>
-                        <li><a href="/users/register">Register</a></li>
+                            <li><a href="/users/register">Register</a></li>
                         <% } %>
                         <% if (user&& user.admin==1) { %>
                             <li><a href="/admin/pages">Admin Area</li>                         

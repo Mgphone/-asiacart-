@@ -26,7 +26,11 @@ const ProductSchema=mongoose.Schema({
   publicId:{
     type:String,
     required:true
+  },
+  quantity:{
+    type:Number,
+    required:true
   }
-});
+},{timestamps:true});
 
 const Product=module.exports=mongoose.model('Product',ProductSchema);

@@ -9,33 +9,60 @@ const Category=require("../models/category");
 //get all product
 // const auth=require("../config/auth");
 // const isUser=auth.isUser;
-router.get('/',function(req,res){
+router.get('/',async(req,res)=>{
   const checkLogin=(req.isAuthenticated())?true:false
-  Product.find((err,products)=>{
-    if(err)
-      console.log(err); 
-    res.render("all_products",{
-      title:'All Products',
-      products:products,
-      checkLogin:checkLogin
+  try {
+    res= await Product.find((err,products)=>{
+      if(err)
+        console.log(err); 
+      res.render("all_products",{
+        title:'All Products',
+        products:products,
+        checkLogin:checkLogin
+      });
     });
-  });
+  } catch (error) {
+    console.log(error);
+  }
+  // Product.find((err,products)=>{
+  //   if(err)
+  //     console.log(err); 
+  //   res.render("all_products",{
+  //     title:'All Products',
+  //     products:products,
+  //     checkLogin:checkLogin
+  //   });
+  // });
 
 });
 
-router.get("/:category",(req,res)=>{
+router.get("/:category",async (req,res)=>{
   const checkLogin=(req.isAuthenticated())?true:false
   var category=req.params.category;
-  Category.findOne({slug:category},function(err,c){
-    Product.find({category:category},function(err,products){
-      if(err){console.log(err);}
-        res.render("cat_products",{
-        title:c.title,
-        products:products,
-        checkLogin:checkLogin
+  try {
+    res= await   Category.findOne({slug:category},function(err,c){
+      Product.find({category:category},function(err,products){
+        if(err){console.log(err);}
+          res.render("cat_products",{
+          title:c.title,
+          products:products,
+          checkLogin:checkLogin
+        })
       })
-    })
-  });
+    });
+  } catch (error) {
+    console.log(error);
+  }
+  // Category.findOne({slug:category},function(err,c){
+  //   Product.find({category:category},function(err,products){
+  //     if(err){console.log(err);}
+  //       res.render("cat_products",{
+  //       title:c.title,
+  //       products:products,
+  //       checkLogin:checkLogin
+  //     })
+  //   })
+  // });
 });
 
 // router.get("/:category",(req,res)=>{

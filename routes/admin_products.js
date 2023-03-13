@@ -40,13 +40,14 @@ router.get('/',isAdmin,function(req,res){
 //get add products
 router.get('/add-product',isAdmin,function(req,res){
   var title="";
- 
+  var quantity="";
   var price="";
   var imageUrl='';
   Category.find((err,categories)=>{
   res.render('admin/add_product',{
     title:title,
     categories:categories,
+    quantity:quantity,
     price:price,
     imageUrl:imageUrl
   });
@@ -63,6 +64,7 @@ router.post('/add-product',upload.single('image'), async(req, res)=> {
     var slug = title.replace(/\s+/g, '-').toLowerCase();
     var price = req.body.price;
     var category = req.body.category;
+    var quantity=req.body.quantity;
     var imageFile=imageResult.url;
     var publicId=imageResult.public_id
    
@@ -70,7 +72,7 @@ router.post('/add-product',upload.single('image'), async(req, res)=> {
               var product = new Product({
                   title: title,
                   slug: slug,
-                 
+                  quantity:quantity,
                   price: price,
                   category: category,
                   imageUrl: imageFile,
@@ -105,7 +107,7 @@ router.get('/edit-product/:id',isAdmin,(req,res)=>{
   Category.find((err,categories)=>{
     if(!err)
     Product.findById(req.params.id,function(err,product){
-      
+      console.log(product);
       if(err)
       return console.log(err);
       if(!err)
@@ -113,7 +115,7 @@ router.get('/edit-product/:id',isAdmin,(req,res)=>{
           id:product._id,
           price:product.price,
           title:product.title,
-         
+          quantity:product.quantity,
           categories:categories,
           category: product.category.replace(/\s+/g, '-').toLowerCase(),
           imageUrl:product.imageUrl,
@@ -140,7 +142,8 @@ router.post('/edit-product/:id',[],upload.single("image"),async(req,res)=>{
     let data={
       title:req.body.title||product.name,
       slug:req.body.title||product.slug, 
-      price:req.body.price||product.price,     
+      price:req.body.price||product.price,
+      quantity:req.body.quantity||product.quantity,     
       category:req.body.category||product.category,
       imageUrl:imageResult.url||product.imageUrl,
       publicId:imageResult.publicId||product.publicId

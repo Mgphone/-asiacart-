@@ -34,20 +34,27 @@
     </tr>
     <tr >
       <td colspan="6" align="right">
-        <b>Total</b> £<%= parseFloat(total).toFixed(2) %>
+        <b>Total</b> £ <%= parseFloat(total).toFixed(2) %>
       </td>
     </tr>
+    
     <tr>
       <td colspan="5" align="right">
         <a class="clearcart btn btn-danger" href="/cart/clear">Clear Cart </a> 
         </td>
         <td colspan="5" align="right">
-          <a class="clearcart btn btn-primary" href="#">Buy Now </a> 
+          <form action= "/cart/buynow" method="post">
+            <input type="hidden" name="amount" value="<%= total %>">
+            <button class="clearcart btn btn-primary" type="submit">Buy Now</button>
+          </form>
+          <!-- <a class="clearcart btn btn-primary" href="/cart/buynow">Buy Now </a>  -->
           </td>
       </td>
     </tr>
 </table>
 
+
+</form>
 <% }else{ %>
   <h3 class="text-center">Your Cart is empty</h3>
 <% } %>

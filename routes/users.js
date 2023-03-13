@@ -6,7 +6,8 @@ const bcrypt=require('bcryptjs');
 const {check,validationResult}=require("express-validator");
 //Get User Model
 const User=require("../models/user");
-
+auth =require("../config/auth");
+const isAdmin=auth.isAdmin;
 
 //Get Register
 router.get("/register",function(req,res){

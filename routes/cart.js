@@ -2,6 +2,8 @@ const express=require("express");
 // const path=require("path");
 const router=express.Router();
 const Page=require("../models/product");
+const Order=require("../models/order");
+const { Result } = require("express-validator");
 
 //get add to product cart
 router.get("/add/:product",function(req,res){
@@ -91,6 +93,7 @@ router.get("/update/:product",(req,res)=>{
       break;
     }
   }
+  
   req.flash('success','Cart updated');
   res.redirect('/cart/checkout');
 })
@@ -101,6 +104,34 @@ router.get("/clear",(req,res)=>{
   res.redirect('/cart/checkout');
 })
 
+//for buy now 
+router.post("/buynow",async(req,res)=>{
+  
+
+  if(!req.session.cart){
+    return res.redirect("/cart/checkout");
+    }
+    const buyCart=req.session.cart;
+    const buyUser=req.user;
+    const amount=req.body.amount;
+    console.log(buyUser,buyCart,amount,buyUser.email);
+    const order=new Order({
+      user:buyUser,
+      cart:buyCart,
+      email:buyUser.email,
+      amount:amount
+    });
+    try {
+      await order.save((err,result)=>{
+        req.flash('Success','Succefully Brought Product');
+        delete req.session.cart;
+        res.redirect('/');
+      });  
+    } catch (error) {
+      console.log(error);
+    }
+    
+});
 
 
 
