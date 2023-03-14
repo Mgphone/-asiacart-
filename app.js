@@ -52,7 +52,12 @@ app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
 
 //Express session middlewear
+const MemoryStore = require('memorystore')(session)
 app.use(session({
+  cookie: { maxAge: 86400000 },
+    store: new MemoryStore({
+      checkPeriod: 86400000 // prune expired entries every 24h
+    }),
   secret: 'keyboard cat',
   resave: false,
   saveUninitialized: true,
