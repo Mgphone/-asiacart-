@@ -6,9 +6,8 @@ const path=require("path");
 auth=require("../config/auth");
 const isAdmin=auth.isAdmin;
 
-// const mkdirp=require("mkdirp");
-const fs=require("fs-extra");
-const resizeImg=require("resize-img");
+
+
 
 // get Model
 const Product=require("../models/product");

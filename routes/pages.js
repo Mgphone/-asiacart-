@@ -4,7 +4,7 @@ const router=express.Router();
 const Page=require("../models/page");
 router.get("/",function(req,res){
   Page.findOne({slug:"home"},(err,page)=>{
-    console.log(page);
+    
     if(err){
       console.log(err);
     }else
@@ -21,7 +21,7 @@ router.get("/",function(req,res){
 router.get("/:slug",function(req,res){
   const slug=req.params.slug;
   Page.findOne({slug:slug},(err,page)=>{
-    console.log(page);
+  
     if (err){
       console.log(err);
     }
