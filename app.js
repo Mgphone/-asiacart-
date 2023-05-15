@@ -106,6 +106,6 @@ app.use('/admin/products',adminProducts);
 
 //start the server
 
-app.listen(process.env.port,function(){
-  console.log('Server started on port '+process.env.PORT);
+app.listen(3000,function(){
+  console.log('Server started on port '+3000);
 })
